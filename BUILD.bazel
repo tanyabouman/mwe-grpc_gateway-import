@@ -1,0 +1,21 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# Gazelle is for getting the external dependencies.
+# gazelle:prefix github.com/tanyabouman/mwe-grpc_gateway-import/
+gazelle(name = "gazelle")
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "mwe",
+    importpath = "github.com/tanyabouman/mwe-grpc_gateway-import",
+    deps = ["@com_github_grpc_ecosystem_grpc_gateway//runtime:go_default_library"],
+)
+
+go_test(
+    name = "mwe_test",
+    deps = ["@com_github_grpc_ecosystem_grpc_gateway//runtime:go_default_library"],
+    # deps = ["@org_golang_google_grpc//status:go_default_library"], # builds
+    # deps = ["@go_googleapis//google/api:httpbody_go_proto"], # builds
+    # deps = ["@com_github_grpc_ecosystem_grpc_gateway//internal:go_default_library"], # builds
+)
