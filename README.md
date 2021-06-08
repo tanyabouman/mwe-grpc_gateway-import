@@ -5,8 +5,8 @@ the external dependency [`com_github_grpc_ecosystem_grpc_gateway`](github.com/gr
 
 There are two go targets in the `BUILD` file: `mwe` and `mwe_test`.
 Both depend on `com_github_grpc_ecosystem_grpc_gateway`, and nothing else.
-## `rules_proto` loaded
-When `rules_proto` is loaded in the `WORKSPACE` file,
+## `rules_proto` or `com_google_protobuf` loaded
+When `rules_proto` or `com_google_protobuf` is loaded in the `WORKSPACE` file,
 the `go_library` builds, but the `go_test` does not.
 
 ```
@@ -42,12 +42,12 @@ So we generate our own.
 That doesn't explain why it fails for the test binary, but not the library.
 
 
-## `rules_proto` not loaded
-When `rules_proto` is not loaded in the `WORKSPACE` file, both the library
+## `rules_proto` and `com_google_protobuf` not loaded
+When both `rules_proto` and `com_google_protobuf` are not loaded in
+the `WORKSPACE` file, both the library
 and the test fail, but with a different error.
 
 ```
 ERROR: /home/tanya/.cache/bazel/_bazel_tanya/955d9fdfc7b7de1b487cf2acf1377142/external/io_bazel_rules_go/proto/BUILD.bazel:20:18: every rule of type _go_proto_compiler implicitly depends upon the target '@com_google_protobuf//:protoc', but this target could not be found because of: no such package '@com_google_protobuf//': The repository '@com_google_protobuf' could not be resolved
 ERROR: Analysis of target '//:mwe' failed; build aborted: Analysis failed
 ```
-

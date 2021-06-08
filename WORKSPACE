@@ -2,38 +2,38 @@ workspace(name = "mwe-grpc_gateway-import")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# when both rules_proto and come_google_protobuf are  missing, both the library and test fail with
+# when just one of them is present, the library builds, and the test fails with:
+
 # rules_proto
+# http_archive(
+#     name = "rules_proto",
+#     sha256 = "602e7161d9195e50246177e7c55b2f39950a9cf7366f74ed5f22fd45750cd208",
+#     strip_prefix = "rules_proto-97d8af4dc474595af3900dd85cb3a29ad28cc313",
+#     urls = [
+#         "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+#         "https://github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+#     ],
+# )
 
-# when this is missing, both the library and test fail with:
-# ERROR: /home/tanya/.cache/bazel/_bazel_tanya/955d9fdfc7b7de1b487cf2acf1377142/external/io_bazel_rules_go/proto/BUILD.bazel:20:18: every rule of type _go_proto_compiler implicitly depends upon the target '@com_google_protobuf//:protoc', but this target could not be found because of: no such package '@com_google_protobuf//': The repository '@com_google_protobuf' could not be resolved
+# load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 
-# when rules_proto is missing, the library builds, and the test fails with:
-# ERROR: /home/tanya/Documents/tweagdocs/mwe-grpc_gateway-import/BUILD.bazel:15:8: GoLink mwe_test_/mwe_test failed: (Exit 1): builder failed: error executing command bazel-out/host/bin/external/go_sdk/builder link -sdk external/go_sdk -installsuffix linux_amd64 -arc ... (remaining 173 argument(s) skipped)
+# rules_proto_dependencies()
 
-# Use --sandbox_debug to see verbose messages from the sandbox
-# link: package conflict error: google.golang.org/genproto/protobuf/source_context: multiple copies of package passed to linker:
-# @io_bazel_rules_go//proto/wkt:source_context_go_proto
-# @org_golang_google_genproto//protobuf/source_context:source_context
-# Set "importmap" to different paths or use 'bazel cquery' to ensure only one
-# package with this path is linked.
-# Target //:mwe_test failed to build
-# Use --verbose_failures to see the command lines of failed build steps.
-# INFO: Elapsed time: 507.860s, Critical Path: 71.01s
+# rules_proto_toolchains()
+
+# protobuf dependency
 http_archive(
-    name = "rules_proto",
-    sha256 = "602e7161d9195e50246177e7c55b2f39950a9cf7366f74ed5f22fd45750cd208",
-    strip_prefix = "rules_proto-97d8af4dc474595af3900dd85cb3a29ad28cc313",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
-        "https://github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
-    ],
+    name = "com_google_protobuf",
+    sha256 = "9748c0d90e54ea09e5e75fb7fac16edce15d2028d4356f32211cfa3c0e956564",
+    strip_prefix = "protobuf-3.11.4",
+    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.11.4.zip"],
 )
 
-load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
-rules_proto_dependencies()
+protobuf_deps()
 
-rules_proto_toolchains()
 
 # rules_go and gazelle
 http_archive(
