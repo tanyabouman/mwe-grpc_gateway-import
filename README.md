@@ -1,7 +1,7 @@
 # Minimum Working Example
 
 This reproduces an error about a `go_test` which depends on
-the external dependency [`com_github_grpc_ecosystem_grpc_gateway`](github.com/grpc-ecosystem/grpc-gateway).
+the external dependency [`com_github_grpc_ecosystem_grpc_gateway`](https://github.com/grpc-ecosystem/grpc-gateway).
 
 There are two go targets in the `BUILD` file: `mwe` and `mwe_test`.
 Both depend on `com_github_grpc_ecosystem_grpc_gateway`, and nothing else.
