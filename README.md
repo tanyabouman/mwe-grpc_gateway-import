@@ -3,17 +3,19 @@
 This reproduces an error about a `go_test` which depends on
 the external dependency [`com_github_grpc_ecosystem_grpc_gateway`](github.com/grpc-ecosystem/grpc-gateway).
 
-There are two go targets in the `BUILD` file.
-The `go_library` builds, but the `go_test` does not.
+There are two go targets in the `BUILD` file: `mwe` and `mwe_test`.
 Both depend on `com_github_grpc_ecosystem_grpc_gateway`, and nothing else.
+## `rules_proto` loaded
+When `rules_proto` is loaded in the `WORKSPACE` file,
+the `go_library` builds, but the `go_test` does not.
 
 ```
-link: package conflict error: github.com/golang/protobuf/protoc-gen-go/descriptor: multiple copies of package passed to linker:
-	@com_github_golang_protobuf//protoc-gen-go/descriptor:descriptor
-	@io_bazel_rules_go//proto/wkt:descriptor_go_proto
+link: package conflict error: google.golang.org/genproto/protobuf/source_context: multiple copies of package passed to linker:
+	@io_bazel_rules_go//proto/wkt:source_context_go_proto
+	@org_golang_google_genproto//protobuf/source_context:source_context
 Set "importmap" to different paths or use 'bazel cquery' to ensure only one
 package with this path is linked.
-Target //:fake_test failed to build
+Target //:mwe_test failed to build
 ```
 
 This error occurs because `com_github_grpc_ecosystem_grpc_gateway` has its
@@ -39,6 +41,13 @@ So we generate our own.
 
 That doesn't explain why it fails for the test binary, but not the library.
 
-Interestingly, there is an error that only shows up for the 
 
-https://github.com/bazelbuild/bazel/issues/11993
+## `rules_proto` not loaded
+When `rules_proto` is not loaded in the `WORKSPACE` file, both the library
+and the test fail, but with a different error.
+
+```
+ERROR: /home/tanya/.cache/bazel/_bazel_tanya/955d9fdfc7b7de1b487cf2acf1377142/external/io_bazel_rules_go/proto/BUILD.bazel:20:18: every rule of type _go_proto_compiler implicitly depends upon the target '@com_google_protobuf//:protoc', but this target could not be found because of: no such package '@com_google_protobuf//': The repository '@com_google_protobuf' could not be resolved
+ERROR: Analysis of target '//:mwe' failed; build aborted: Analysis failed
+```
+
